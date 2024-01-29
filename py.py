@@ -1,92 +1,196 @@
-#------------------------------Syntax------------------------------
-print("Hello World")
+#-------------------------Booleans-------------------------
+print(10 > 9) #True
 
-if 5 > 2:
+print(10 == 9) #False
+
+print(10 < 9) #False
+
+print(bool("abc")) #True
+
+print(bool(0)) #False
+
+#-------------------------Operators-------------------------
+print(10 * 5)
+
+print(10 / 2)
+
+fruits = ["apple", "banana"]
+if "apple" in fruits:
+    print("Yes, apple is a fruit!")
+
+if 5 != 10:
+    print("5 and 10 is not equal")
+
+if 5 == 10 or 4 == 4:
+    print("At least one of the statements is true")
+
+#-------------------------List-------------------------
+fruits = ["apple", "banana", "cherry"]
+print(fruits[1])
+
+fruits = ["apple", "banana", "cherry"]
+fruits[0] = "kiwi"
+
+fruits = ["apple", "banana", "cherry"]
+fruits.append("orange")
+
+fruits = ["apple", "banana", "cherry"]
+fruits.insert(1, "lemon")
+
+fruits = ["apple", "banana", "cherry"]
+fruits.remove("banana")
+
+fruits = ["apple", "banana", "cherry"]
+print(fruits[-1])
+
+fruits = ["apple", "banana", "cherry", "orange", "kiwi", "melon", "mango"]
+print(fruits[2:5])
+
+fruits = ["apple", "banana", "cherry"]
+print(len(fruits))
+
+#-------------------------Tuples-------------------------
+fruits = ("apple", "banana", "cherry")
+print(fruits[0])
+
+fruits = ("apple", "banana", "cherry")
+print(len(fruits))
+
+fruits = ("apple", "banana", "cherry")
+print(fruits[-1])
+
+fruits = ("apple", "banana", "cherry", "orange", "kiwi", "melon", "mango")
+print(fruits[2:5])
+
+#-------------------------Sets-------------------------
+fruits = {"apple", "banana", "cherry"}
+if "apple" in fruits:
+    print("Yes, apple is a fruit!")
+
+fruits = {"apple", "banana", "cherry"}
+fruits.add("orange")
+
+fruits = {"apple", "banana", "cherry"}
+more_fruits = ["orange", "mango", "grapes"]
+fruits.update(more_fruits)
+
+fruits = {"apple", "banana", "cherry"}
+fruits.remove("banana")
+
+fruits = {"apple", "banana", "cherry"}
+fruits.discard("banana")
+
+#-------------------------Dictionaries-------------------------
+car =	{
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+print(car.get("model"))
+
+car =	{
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+car["year"] = 2020
+
+car =	{
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+car["color"] = "red"
+
+car =	{
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+car.pop("model")
+
+car =	{
+  "brand": "Ford",
+  "model": "Mustang",
+  "year": 1964
+}
+car.clear()
+
+#-------------------------if...Else-------------------------
+a = 50
+b = 10
+if a > b:
+    print("Hello World")
+
+if a != b:
+    print("Hello World")
+
+if a == b:
     print("Yes")
+else:
+    print("No")
 
-#------------------------------Comments------------------------------
+if a == b:
+    print("1")
+elif a > b:
+    print("2")
+else:
+    print("3")
 
-#This is a comment
+c = d = 10
 
-"""
-This is a comment
-written in 
-more than just one line
-"""
+if a == b and c == d:
+    print("Hello")
 
-#------------------------------Variables------------------------------
+if a == b or c == d:
+    print("Hello")
 
-carname = "Volvo"
-x = 50
+a = 2
+b = 5
+print("YES") if a == b else print("NO")
 
-x = 5 
-y = 10
-print(x+y)
+#-------------------------While Loops-------------------------
+i = 1
+while i < 6:
+    print(i)
+    i += 1
 
-z = x + y
-print(z)
+i = 1
+while i < 6:
+    if i == 3:
+        break
+    i += 1
 
-x, y, z = "Orange", "Banana", "Cherry"
+i = 0
+while i < 6:
+    i += 1
+    if i == 3:
+        continue
+    print(i)
 
-x = y = z = "Orange"
+i = 1
+while i < 6:
+    print(i)
+    i += 1
+else:
+    print("i is no longer less than 6")
 
-def myfunc():
-    global x
-    x = "fantastic"
+#-------------------------For Loops-------------------------
+fruits = ["apple", "banana", "cherry"]
+for x in fruits:
+    print(x)
 
-x = 5
-print(type(x)) #int
+fruits = ["apple", "banana", "cherry"]
+for x in fruits:
+    if x == "banana":
+        continue
+    print(x)
 
-x = "Hello World"
-print(type(x)) #str
+for x in range(6):
+    print(x)
 
-x = 20.5
-print(type(x)) #float
-
-x = ["apple", "banana", "cherry"]
-print(type(x)) #list
-
-x = ("apple", "banana", "cherry")
-print(type(x)) #tuple
-
-x = {"name" : "John", "age" : 36}
-print(type(x)) #dict
-
-x = True
-print(type(x)) #bool
-
-#------------------------------Numbers------------------------------
-x = 5
-x = float(x)
-
-x = 5.5
-x = int(x)
-
-x = 5
-x = complex(x)
-
-#------------------------------Strings------------------------------
-x = "Hello World"
-print(len(x))
-
-txt = "Hello World"
-x = txt[0]
-
-txt = "Hello World"
-x = txt[2:5]
-
-txt = " Hello World "
-x = txt.strip()
-
-txt = "Hello World"
-txt = txt.upper()
-
-txt = "Hello World"
-txt = txt.lower()
-
-txt = "Hello World"
-txt = txt.replace("H", "J")
-
-age = 36
-txt = "My name is John, and I am {}"
-print(txt.format(age))
+fruits = ["apple", "banana", "cherry"]
+for x in fruits:
+    if x == "banana":
+        break
+    print(x)
