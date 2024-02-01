@@ -5,7 +5,7 @@ print(10 == 9) #False
 
 print(10 < 9) #False
 
-print(bool("abc")) #True
+print(bool("")) #True
 
 print(bool(0)) #False
 
@@ -21,7 +21,7 @@ if "apple" in fruits:
 if 5 != 10:
     print("5 and 10 is not equal")
 
-if 5 == 10 or 4 == 4:
+if 5 == 10 and 4 == 4:
     print("At least one of the statements is true")
 
 #-------------------------List-------------------------
@@ -63,6 +63,8 @@ fruits = ("apple", "banana", "cherry", "orange", "kiwi", "melon", "mango")
 print(fruits[2:5])
 
 #-------------------------Sets-------------------------
+fr = [1,2]
+x = set(fr)
 fruits = {"apple", "banana", "cherry"}
 if "apple" in fruits:
     print("Yes, apple is a fruit!")
@@ -76,6 +78,8 @@ fruits.update(more_fruits)
 
 fruits = {"apple", "banana", "cherry"}
 fruits.remove("banana")
+
+
 
 fruits = {"apple", "banana", "cherry"}
 fruits.discard("banana")
@@ -93,7 +97,8 @@ car =	{
   "model": "Mustang",
   "year": 1964
 }
-car["year"] = 2020
+car[
+    "year"] = 2020
 
 car =	{
   "brand": "Ford",
@@ -114,6 +119,8 @@ car =	{
   "model": "Mustang",
   "year": 1964
 }
+for i in car.values:
+    print(i)
 car.clear()
 
 #-------------------------if...Else-------------------------
@@ -121,6 +128,8 @@ a = 50
 b = 10
 if a > b:
     print("Hello World")
+
+
 
 if a != b:
     print("Hello World")
