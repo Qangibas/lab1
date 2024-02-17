@@ -1,5 +1,5 @@
 #--------------------------Python date--------------------------
-'''
+
 import datetime
 #1
 x = datetime.datetime.now()
@@ -96,7 +96,7 @@ print((1/4)*n*s**2*(1/math.tan(math.pi/n)))
 #4
 a, h = map(int,input().split())
 print(a*h)
-'''
+
 #--------------------------JSON--------------------------
 import json
 
