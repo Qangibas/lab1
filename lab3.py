@@ -9,7 +9,7 @@ class string_methods:
 
     def printString(self):
         print(self.str.upper())
-
+ 
 use = string_methods()
 use.getString()
 use.printString()
@@ -18,6 +18,9 @@ use.printString()
 class Shape:
     def area():
         print(0)
+
+class inh(Shape):
+    pass
 
 class Square(Shape):
     def __init__(self,length):
@@ -70,11 +73,11 @@ class bank_account():
         self.balance = balance
 
     def deposit(self,dep):
-        self.deposit =+ dep
+        self.balance =+ dep
     
     def withdraw(self,withd):
-        if self.withdraw > withd:
-            self.withdraw=-withd
+        if self.balance > withd:
+            self.balance=-withd
         else:
             print("Sizdin balans molsheri zhetpeidi")
 
@@ -145,6 +148,8 @@ print(list(filter(prime_filter, numlist)))
 
 #5
 def string_permutation(str,str1 = ""):
+    if len(str) == 0:
+        print(str1)
     for i in range(len(str)):
         next = str[i]
         rem = str[:i]+str[i+1:]
@@ -233,7 +238,7 @@ def num_guess(num,q = 0,n = False):
 
 num = random.randint(1,20)
 name = input("Hello! What is your name?:")
-print("Well, KBTU, I am thinking of a number between 1 and 20.")
+print("Well, ",name,", I am thinking of a number between 1 and 20.")
 num_guess(num)
 
 #--------------------------------------function2--------------------------------------
