@@ -6,7 +6,7 @@ str = 'aibar'
 print(re.match("ab*", str))
 
 #2
-str = 'abbar'
+str = 'abar'
 print(re.match("ab{2,3}", str))
 
 #3
@@ -19,7 +19,7 @@ print(re.findall(r'[A-Z][a-z]+', str))
 
 #5
 str = 'andrab'
-print(re.findall(r'^a.*b$', str))
+print(re.findall(r'^ab.*b$', str))
 
 #6
 str = 'Hello world.and.peaple'

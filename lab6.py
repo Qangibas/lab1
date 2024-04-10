@@ -11,20 +11,25 @@ n = int(input())
 print(multiple(n,arr))
 
 #2
+def func(str):
+    a = 0
+    b = 0
+    for i in range(len(str)):
+        if str[i].isupper():
+            a+=1
+        elif str[i].islower():
+            b+=1
+    return a, b
 str = input()
-a = 0
-b = 0
-for i in range(len(str)):
-    if str[i].isupper():
-        a+=1
-    elif str[i].islower():
-        b+=1
-print(a, b)
+print(func(str))
 
-#3  
+#3
+def pal():
+    if str[::-1] == str:
+        return "its palendrom"  
 str = input()
-if str[::-1] == str:
-    print("its palendrom")
+print(pal(str))
+
 
 #4
 def square_root(number, milliseconds):
@@ -98,7 +103,6 @@ for i in let:
     file = f"{i}.txt"
     with open(file, 'w') as file:
         file.write(file)
-        print(file)
 
 #7
 copy = 'one_more_example.txt'
