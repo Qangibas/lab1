@@ -1,197 +1,215 @@
-import pygame, random, time
-pygame.init()
+import pygame  
+import sys  # Импортируем модуль sys для взаимодействия с системой
+import copy  # Импортируем модуль copy для создания копий объектов
+import random  # Импортируем модуль random для работы с случайными числами
+import time  # Импортируем модуль time для работы со временем
 
-SIZE = W, H = 1200, 800
-FPS = 60
-done = False
-bg =(0, 0, 0)
+pygame.init()  # Инициализируем Pygame
 
-screen = pygame.display.set_mode(SIZE, pygame.RESIZABLE)
-clock = pygame.time.Clock()
+# Устанавливаем параметры игры
+scale = 15  # Масштаб объектов
+score = 0  # Счет игрока
+level = 0  # Уровень игры
+SPEED = 10  # Скорость движения змейки
 
-# paddle
-paddleW = 150
-paddleH = 25
-paddleSpeed = 20#*2
-paddle = pygame.Rect(W//2-paddleW//2, H - paddleH-30, paddleW, paddleH)
-paddle_color = (255, 255, 255)
+food_x = 10  # Координата x для еды
+food_y = 10  # Координата y для еды
 
-# ball
-ballRadius = 20
-ballSpeed = 6#*2
-ball_rect = int(ballRadius*2**0.5)
-ball = pygame.Rect(random.randrange(ball_rect, W - ball_rect), H//2, ball_rect, ball_rect)
-dx, dy = 1, -1
+# Создаем окно для отображения игры
+display = pygame.display.set_mode((500, 500))
+pygame.display.set_caption("Snake Game")  # Устанавливаем заголовок окна
+clock = pygame.time.Clock()  # Создаем объект Clock для управления временем в игре
 
-# Game score
-game_score = 0
-game_score_fonts = pygame.font.SysFont('comicsansms', 40)
-game_score_text = game_score_fonts.render(f'Your game score is: {game_score}', True, (0, 0, 0))
-game_score_rect = game_score_text.get_rect()
-game_score_rect.center = (210, 20)
+# Определяем цвета в формате RGB
+background_top = (0, 0, 50)  # Цвет верхнего уровня фона
+background_bottom = (0, 0, 0)  # Цвет нижнего уровня фона
+snake_colour = (255, 137, 0)  # Цвет змейки
+food_colour = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))  # Цвет еды (случайный)
+snake_head = (255, 247, 0)  # Цвет головы змейки
+font_colour = (255, 255, 255)  # Цвет шрифта
+defeat_colour = (255, 0, 0)  # Цвет при проигрыше
+
+# Определяем класс Snake для создания объекта змейки
+class Snake:
+    def __init__(self, x_start, y_start):
+        self.x = x_start  # Координата x начального положения змейки
+        self.y = y_start  # Координата y начального положения змейки
+        self.w = 15  # Ширина змейки
+        self.h = 15  # Высота змейки
+        self.x_dir = 1  # Направление движения по оси x (1 - вправо, -1 - влево)
+        self.y_dir = 0  # Направление движения по оси y (1 - вниз, -1 - вверх)
+        self.history = [[self.x, self.y]]  # История перемещений змейки
+        self.length = 1  # Длина змейки
+
+    # Метод для сброса состояния змейки
+    def reset(self):
+        self.x = 500 / 2 - scale  # Возвращаем змейку в центр по оси x
+        self.y = 500 / 2 - scale  # Возвращаем змейку в центр по оси y
+        self.w = 15  # Сбрасываем ширину змейки
+        self.h = 15  # Сбрасываем высоту змейки
+        self.x_dir = 1  # Сбрасываем направление по оси x
+        self.y_dir = 0  # Сбрасываем направление по оси y
+        self.history = [[self.x, self.y]]  # Сбрасываем историю перемещений
+        self.length = 1  # Сбрасываем длину змейки
+
+    # Метод для отображения змейки на экране
+    def show(self):
+        for i in range(self.length):
+            if not i == 0:
+                pygame.draw.rect(display, snake_colour, (self.history[i][0], self.history[i][1], self.w, self.h))
+            else:
+                pygame.draw.rect(display, snake_head, (self.history[i][0], self.history[i][1], self.w, self.h))
+
+    # Метод для проверки съедения еды
+    def check_eaten(self):
+        if abs(self.history[0][0] - food_x) < scale and abs(self.history[0][1] - food_y) < scale:
+            return True
+
+    # Метод для проверки достижения нового уровня
+    def check_level(self):
+        global level
+        if self.length % 5 == 0:
+            return True
+
+    # Метод для увеличения длины змейки
+    def grow(self):
+        self.length += 1
+        self.history.append(self.history[self.length - 2])
+
+    # Метод для проверки столкновения с собственным хвостом
+    def death(self):
+        i = self.length - 1
+        while i > 0:
+            if abs(self.history[0][0] - self.history[i][0]) < self.w and abs(self.history[0][1] - self.history[i][1]) < self.h and self.length > 2:
+                return True
+            i -= 1
+
+    # Метод для обновления координат змейки
+    def update(self):
+        i = self.length - 1
+        while i > 0:
+            self.history[i] = copy.deepcopy(self.history[i - 1])
+            i -= 1
+        self.history[0][0] += self.x_dir * scale
+        self.history[0][1] += self.y_dir * scale
+
+# Определяем класс Food для создания объекта еды
+class Food:
+    # Метод для установки новой позиции еды на экране
+    def new_location(self):
+        global food_x, food_y
+        food_x = random.randrange(1, int(500 / scale) - 1) * scale
+        food_y = random.randrange(1, int(500 / scale) - 1) * scale
+
+    # Метод для отображения еды на экране
+    def show(self):
+        pygame.draw.rect(display, food_colour, (food_x, food_y, scale))
 
 
-# catching sound
-collision_sound = pygame.mixer.Sound('catch.mp3')
+class Food:
+    def new_location(self):
+        global food_x, food_y
+        food_x = random.randrange(1, int(500 / scale) - 1) * scale
+        food_y = random.randrange(1, int(500 / scale) - 1) * scale
 
-def detect_collision(dx, dy, ball, rect):
-    if dx > 0:
-        delta_x = ball.right - rect.left
-    else:
-        delta_x = rect.right - ball.left
-    if dy > 0:
-        delta_y = ball.bottom - rect.top
-    else:
-        delta_y = rect.bottom - ball.top
-        
-    if abs(delta_x - delta_y) < 10:
-        dx, dy = -dx, -dy
-    if delta_x > delta_y:
-        dy = -dy
-    elif delta_y > delta_x:
-        dx = -dx
-    return dx, dy
+    def show(self):
+        pygame.draw.rect(display, food_colour, (food_x, food_y, scale, scale))
 
-# block settings
-block_list = [pygame.Rect(10 + 120*i, 50 + 70*j,
-            100, 50) for i in range(10)
-            for j in range(4)]
+# Функция для отображения счета игрока
+def show_score():
+    font = pygame.font.SysFont(None, 20)
+    text = font.render("Score: " + str(score), True, font_colour)
+    display.blit(text, (scale, scale))
 
-# unbreakable bricks
-unblreakable_index_list = [random.randrange(0, 40) for i in range(10)]
+# Функция для отображения уровня игры
+def show_level():
+    font = pygame.font.SysFont(None, 20)
+    text = font.render("Level: " + str(level), True, font_colour)
+    display.blit(text, (90 - scale, scale))
 
-# bonus bricks
-bonus_blocks = [random.randrange(0, 40) for i in range(10)]
-for i in bonus_blocks:
-    if i in unblreakable_index_list:
-        bonus_blocks.remove(i)
-        
-color_list = [(random.randrange(0, 100), 
-               random.randrange(0, 100), 
-               random.randrange(0, 255)) 
-            for i in range(10) for j in range(4)]
+# Основной цикл игры
+def gameLoop():
+    global score
+    global level
+    global SPEED
 
-for i in unblreakable_index_list:
-    color_list[i] = (255, 255, 255)
-    print(i)
-for i in bonus_blocks:
-    color_list[i] = (255, 255, 0)
+    snake = Snake(500 / 2, 500 / 2)  # Создаем объект змейки
+    food = Food()  # Создаем объект еды
+    food.new_location()  # Устанавливаем начальное положение еды
 
-# Game over screen
-losefont = pygame.font.SysFont('comicsansms', 40)
-losetxt = losefont.render('Game over', True, (255, 255, 255))
-loserect = losetxt.get_rect()
-loserect.center = (W//2, H//2)
+    while True:  # Бесконечный цикл игры
+        for event in pygame.event.get():  # Обработка событий
+            if event.type == pygame.QUIT:  # Если пользователь закрывает окно
+                pygame.quit()  # Завершаем работу Pygame
+                sys.exit()  # Завершаем выполнение программы
+            if event.type == pygame.KEYDOWN:  # Если пользователь нажимает клавишу
+                if event.key == pygame.K_q:  # Если нажата клавиша Q
+                    pygame.quit()  # Завершаем работу Pygame
+                    sys.exit()  # Завершаем выполнение программы
+                if snake.y_dir == 0:  # Если змейка движется по горизонтали
+                    if event.key == pygame.K_UP:  # Если нажата клавиша Вверх
+                        snake.x_dir = 0  # Устанавливаем направление движения по горизонтали в 0
+                        snake.y_dir = -1  # Устанавливаем направление движения по вертикали вверх
+                    if event.key == pygame.K_DOWN:  # Если нажата клавиша Вниз
+                        snake.x_dir = 0  # Устанавливаем направление движения по горизонтали в 0
+                        snake.y_dir = 1  # Устанавливаем направление движения по вертикали вниз
 
-# Win screen
-winfont = pygame.font.SysFont('comicsansms', 40)
-wintxt = winfont.render('You win waw', True, (0, 0, 0))
-wintxtRect = wintxt.get_rect()
-wintxtRect.center = (W//2, H//2)
+                if snake.x_dir == 0:  # Если змейка движется по вертикали
+                    if event.key == pygame.K_LEFT:  # Если нажата клавиша Влево
+                        snake.x_dir = -1  # Устанавливаем направление движения по горизонтали влево
+                        snake.y_dir = 0  # Устанавливаем направление движения по вертикали в 0
+                    if event.key == pygame.K_RIGHT:  # Если нажата клавиша Вправо
+                        snake.x_dir = 1  # Устанавливаем направление движения по горизонтали вправо
+                        snake.y_dir = 0  # Устанавливаем направление движения по вертикали в 0
 
+        # Заполнение фона градиентом
+        for y in range(500):
+            color = (
+                background_top[0] + (background_bottom[0] - background_top[0]) * y / 500,
+                background_top[1] + (background_bottom[1] - background_top[1]) * y / 500,
+                background_top[2] + (background_bottom[2] - background_top[2]) * y / 500
+            )
+            pygame.draw.line(display, color, (0, y), (500, y))
 
-# Time
-starttime = time.time()
-ellapsedtime = starttime - time.time()
+        snake.show()  # Отображаем змейку на экране
+        snake.update()  # Обновляем положение змейки
+        food.show()  # Отображаем еду на экране
+        show_score()  # Отображаем счет игрока
+        show_level()  # Отображаем уровень игры
 
-# Time screen
-timefont = pygame.font.SysFont('comicsansms', 40)
-timetxt = timefont.render(f'Time: {ellapsedtime}s', True, (255, 255, 255))
-timetxtRect = timetxt.get_rect()
-timetxtRect.center = (W/2, 20)
+        if snake.check_eaten():  # Если змейка съела еду
+            food.new_location()  # Устанавливаем новую позицию еды
+            score += random.randint(1, 5)  # Увеличиваем счет на случайное значение
+            snake.grow()  # Увеличиваем длину змейки
 
+        if snake.check_level():  # Если достигнут новый уровень
+            food.new_location()  # Устанавливаем новую позицию еды
+            level += 1  # Увеличиваем уровень
+            SPEED += 1  # Увеличиваем скорость змейки
+            snake.grow()  # Увеличиваем длину змейки
 
+        if snake.death():  # Если змейка столкнулась с собственным хвостом
+            score = 0  # Сбрасываем счет
+            level = 0  # Сбрасываем уровень
+            font = pygame.font.SysFont(None, 100)  # Устанавливаем шрифт для отображения текста
+            text = font.render("Game Over!", True, defeat_colour)  # Создаем текст "Game Over!"
+            display.blit(text, (50, 200))  # Отображаем текст на экране
+            pygame.display.update()  # Обновляем экран
+            time.sleep(3)  # Задержка перед сбросом игры
+            snake.reset()  # Сбрасываем состояние змейки
 
-while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            # pygame.quit()
-            done = True
-    screen.fill(bg)
+        if snake.history[0][0] > 500:  # Если змейка вышла за пределы правой границы
+            snake.history[0][0] = 0  # Перемещаем змейку на левую границу
 
-    [pygame.draw.rect(screen, color_list[color], block)
-    for color, block in enumerate(block_list)] #drawing blocks
-    pygame.draw.rect(screen, paddle_color, paddle)
-    pygame.draw.circle(screen, pygame.Color(255, 0, 0), ball.center, ballRadius)
+        if snake.history[0][0] < 0:  # Если змейка вышла за пределы левой границы
+            snake.history[0][0] = 500  # Перемещаем змейку на правую границу
+            
+        if snake.history[0][1] > 500:
+            snake.history[0][1] = 0
+        if snake.history[0][1] < 0:
+            snake.history[0][1] = 500
 
- 
-    # Ball movement
-    ball.x +=ballSpeed * dx
-    ball.y +=ballSpeed * dy
-    
-    # Collision left
-    if ball.centerx < ballRadius or ball.centerx > W - ballRadius:
-        dx = -dx
-    # Collision top
-    if ball.centery < ballRadius: # or ball.centery > H - ballRadius:
-        dy = -dy
-    
-    if ball.colliderect(paddle) and dy > 0:
-        dx, dy = detect_collision(dx, dy, ball, paddle)
-        paddle_color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    
-    hitIndex = ball.collidelist(block_list)
-    # if hitIndex!=-1:
-    #     print(hitIndex)
+        pygame.display.update()
+        clock.tick(SPEED)
 
-    if hitIndex != -1:
-        hitRect = block_list[hitIndex]
-        if hitIndex not in unblreakable_index_list:
-            hitRect = block_list.pop(hitIndex)
-            hitColor = color_list.pop(hitIndex)
-            game_score += 1
-            collision_sound.play()
-            for j in range(len(unblreakable_index_list)):
-                if hitIndex < unblreakable_index_list[j]:
-                    unblreakable_index_list[j]-=1
-            for j in range(len(bonus_blocks)):
-                if hitIndex < bonus_blocks[j]:
-                    bonus_blocks[j]-=1
-                    
-            if hitIndex in bonus_blocks:
-                bonus_blocks.remove(hitIndex)
-                # bonus: 1.2x paddle
-                paddleW *=1.2
-            dx, dy = detect_collision(dx, dy, ball, hitRect)
-        dx, dy = detect_collision(dx, dy, ball, hitRect)
-                    
-    
-    
-    # Game score
-    game_score_text = game_score_fonts.render(f'Your game score is: {game_score}', True, (255, 255, 255))
-    screen.blit(game_score_text, game_score_rect)
-    
-    # Time
-    ellapsedtime = time.time() - starttime
-    seconds = int(ellapsedtime)
-    timetxt = timefont.render(f'Time: {seconds}s', True, (255, 255, 255))
-    screen.blit(timetxt, timetxtRect)
-    
-    # Ball speed increas
-    ballSpeed += ellapsedtime/5000
-    
-    # Shrink the paddle with time
-    paddleW -= ellapsedtime/500
-    paddleH = 25
-    paddleSpeed = 20
-    paddle = pygame.Rect(paddle.x, H - paddleH-30, paddleW, paddleH)
-    
-    # Win/Lose screen
-    if ball.bottom > H:
-        screen.fill((0, 0, 0))
-        screen.blit(losetxt, loserect)
-    elif not len(block_list):
-        screen.fill((255, 255, 255))
-        screen.blit(wintxt, wintxtRect)
-    
-    # Paddle controle
-    key = pygame.key.get_pressed()
-    
-    if key[pygame.K_LEFT] and paddle.left > 0:
-        paddle.left -= paddleSpeed
-    if key[pygame.K_RIGHT] and paddle.right < W:
-        paddle.right += paddleSpeed
-    
-    
-    pygame.display.update()
-    clock.tick(FPS)
+gameLoop()
