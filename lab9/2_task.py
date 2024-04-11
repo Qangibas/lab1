@@ -107,13 +107,28 @@ class Food:
 
 
 class Food:
+    def __init__(self):
+        self.disappear_time = 5000  # Время, через которое еда исчезнет (в миллисекундах)
+        self.reset_timer()  # Инициализируем таймер
+
+    def reset_timer(self):
+        self.timer = pygame.time.get_ticks()  # Получаем текущее время при создании новой еды
+
+    # Метод для установки новой позиции еды на экране
     def new_location(self):
         global food_x, food_y
         food_x = random.randrange(1, int(500 / scale) - 1) * scale
         food_y = random.randrange(1, int(500 / scale) - 1) * scale
+        self.reset_timer()  # Сбрасываем таймер при создании новой еды
 
+    # Метод для отображения еды на экране
     def show(self):
         pygame.draw.rect(display, food_colour, (food_x, food_y, scale, scale))
+
+    def check_disappear(self):
+        current_time = pygame.time.get_ticks()  # Получаем текущее время
+        if current_time - self.timer > self.disappear_time:  # Проверяем, прошло ли достаточно времени
+            return True
 
 # Функция для отображения счета игрока
 def show_score():
@@ -209,6 +224,9 @@ def gameLoop():
         if snake.history[0][1] < 0:
             snake.history[0][1] = 500
 
+        if food.check_disappear():  # Проверяем, исчезла ли еда
+            food.new_location()  # Если да, создаем новую еду
+        
         pygame.display.update()
         clock.tick(SPEED)
 
