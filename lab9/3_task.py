@@ -232,10 +232,6 @@ while True:
                 drawLine(screen, lastPos, event.pos, radius, 'white')  # If drawing is enabled and erase mode is active, draw a white line (erase) between the last position and the current position
             lastPos = event.pos  # Update the last position to the current position
  
-    # Draw a rectangle to display the radius information
-    pygame.draw.rect(screen, pygame.Color('white'), (5, 5, 115, 75))  # Draw a white rectangle to display the radius information
-    renderRadius = font.render(str(radius), True, pygame.Color(color))  # Render the text showing the current radius
-    screen.blit(renderRadius, (5, 5))  # Blit the rendered text onto the screen at the specified position
  
     pygame.display.flip()  # Update the display
     clock.tick(FPS)  # Control the frame rate

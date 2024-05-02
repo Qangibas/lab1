@@ -104,7 +104,7 @@ class Food:
     # Метод для отображения еды на экране
     def show(self):
         pygame.draw.rect(display, food_colour, (food_x, food_y, scale))
-
+  
 
 class Food:
     def __init__(self):
